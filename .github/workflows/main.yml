@@ -19,11 +19,13 @@ jobs:
         with:
           gradle-version: 8.7
 
-      - name: Find project folder
+      - name: Unpack zips and find project
         id: p
         run: |
+          mkdir -p proj
+          for z in *.zip; do [ -f "$z" ] && unzip -oq "$z" -d "proj/${z%.zip}"; done
           f=$(find . -name settings.gradle.kts | head -n1)
-          if [ -z "$f" ]; then echo "No settings.gradle.kts in repo"; ls -R | head -50; exit 1; fi
+          if [ -z "$f" ]; then echo "No project found"; ls -R | head -50; exit 1; fi
           echo "dir=$(dirname "$f")" >> $GITHUB_OUTPUT
 
       - name: Build debug APK
